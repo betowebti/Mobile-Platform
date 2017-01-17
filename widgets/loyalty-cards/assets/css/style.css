@@ -1,0 +1,51 @@
+.card-container {
+	margin:20px 0;
+}
+
+.card-container img {
+	max-width:100%
+}
+
+.card-container > .row {
+	margin:10px 0;
+}
+
+.icon-row {
+	align-items:center
+}
+
+.button-row .button .icon {
+	float:left
+}
+
+.stamp {
+	background-color:#fff;
+	color:#000;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+	display:inline-block;
+	width:80px;
+	height:80px;
+	line-height:80px;
+	text-decoration:none;
+	-webkit-box-shadow:1px 1px 24px 0 rgba(0,0,0,0.5);
+	-moz-box-shadow:1px 1px 24px 0 rgba(0,0,0,0.5);
+	box-shadow:1px 1px 24px 0 rgba(0,0,0,0.5)
+}
+
+.stamp span {
+	font-size:2.5em
+}
+
+.stamp i {
+	color:#000;
+	font-size:4.3em;
+}
+
+.card-holder {
+	width:100%;
+	padding:60px 0;
+	font-size:2.2em;
+	text-align:center;
+}

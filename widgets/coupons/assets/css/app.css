@@ -1,0 +1,40 @@
+.coupon-type {
+	width:120px;
+	height:120px;
+	float:left;
+	border:3px solid #ccc;
+	text-align:center;
+	color: #000;
+	margin:0 10px 0 0;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.coupon-type div {
+	border:1px dashed #ccc;
+	margin:10px;
+	padding:10px;
+	font-size:20px;
+}
+.coupon-type.active,
+.coupon-type:hover {
+	border:3px solid #1e9bd0;
+}
+.coupon-type:hover {
+	color: #1e9bd0;
+}
+.coupon-type:hover div {
+	border:1px dashed #1e9bd0;
+}
+.card-image {
+	width:180px;
+	height:135px;
+	float:right !important;
+	margin:1px 0 0 0 !important;
+}
+.card-image i {
+    margin-top:16px !important;
+}
+.deal-type {
+    display:none;
+}

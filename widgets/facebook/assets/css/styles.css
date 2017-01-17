@@ -1,0 +1,9 @@
+.item-avatar.avatar-square img {
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+.small-image {
+	float:left;
+	margin:0 20px 0px 0;
+}

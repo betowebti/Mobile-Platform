@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /local/
+Disallow: /app/
+Disallow: /static/
+Disallow: /stock/
+Disallow: /themes/
+Disallow: /uploads/
+Disallow: /widgets/
+Disallow: /packages/

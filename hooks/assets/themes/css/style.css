@@ -1,0 +1,103 @@
+/*
+ * Default
+ */
+
+body.theme-default #app-pages, body.theme-default #app-style {
+    border-bottom: 4px solid #1e9bd0;
+}
+
+body.theme-default #main-menu .navigation h4 {
+
+}
+
+/*
+ * Clean
+ */
+
+body.theme-clean #app-pages, body.theme-clean #app-style {
+    border-bottom: 4px solid #67cea6;
+}
+
+body.theme-default #main-menu .navigation h4 {
+
+}
+
+/*
+ * Fresh
+ */
+
+body.theme-fresh #app-pages, body.theme-fresh #app-style {
+    border-bottom: 4px solid #81cadf;
+}
+
+body.theme-fresh #main-menu .navigation h4 {
+	color:#777;
+}
+
+/*
+ * Asphalt
+ */
+
+body.theme-asphalt #app-pages, body.theme-asphalt #app-style {
+    border-bottom: 4px solid #6cc7bf;
+}
+
+body.theme-asphalt #main-menu .navigation h4 {
+	color:#888;
+}
+
+/*
+ * Purple Hills
+ */
+
+body.theme-purple-hills #app-pages, body.theme-purple-hills #app-style {
+    border-bottom: 4px solid #9786a7;
+}
+
+body.theme-purple-hills #main-menu .navigation h4 {
+	color:#666;
+}
+
+/*
+ * Admin Flare
+ */
+
+body.theme-adminflare #app-pages, body.theme-adminflare #app-style {
+    border-bottom: 4px solid #56a2ea;
+}
+
+/*
+ * Dust
+ */
+
+body.theme-dust #app-pages, body.theme-dust #app-style {
+    border-bottom: 4px solid #8c8181;
+}
+
+body.theme-dust #main-menu .navigation h4 {
+	color:#666;
+}
+
+/*
+ * Frost
+ */
+
+body.theme-frost #app-pages, body.theme-frost #app-style {
+    border-bottom: 4px solid #5ab7d6;
+}
+
+/*
+ * Silver
+ */
+
+body.theme-silver #app-pages, body.theme-silver #app-style {
+    border-bottom: 4px solid #81cadf;
+}
+
+/*
+ * White
+ */
+
+body.theme-white #app-pages, body.theme-white #app-style {
+    border-bottom: 4px solid #67c2dc;
+}
