@@ -167,7 +167,7 @@
 
                 <p class="lead panel-padding-h">After installation you can login with <strong>info@example.com</strong> / <strong>welcome</strong>.</p>
 
-                <p class="panel-padding-h">For more information on configuration options, visit <a href="http://nowsquare.com/mobile-platform/documentation/v1/widget-configurations" target="_blank">http://nowsquare.com/mobile-platform/documentation/v1/widget-configurations</a>.</p>
+                <p class="panel-padding-h">For more information on configuration options, visit <a href="https://nowsquare.com/mobile-platform/documentation/v2/configuration" target="_blank">https://nowsquare.com/mobile-platform/documentation/v2/configuration</a>.</p>
 
                 <hr>
 
