@@ -3,7 +3,7 @@
 return array(
 	"name" => "Facebook",
 	"facebook_id" => "Facebook Firmenseiten-ID",
-	"facebook_id_help" => "Ihre Facebook-ID ist der letzte Teil der URL. Sie können auch Ihre numerische ID verwenden, die Sie hier finden <a href='http://findmyfacebookid.com/' target='_blank'>http://findmyfacebookid.com/</a>",
+	"facebook_id_help" => "Ihre Facebook-ID ist der letzte Teil der URL. Sie können auch Ihre numerische ID verwenden, die Sie hier finden <a href='https://findmyfbid.com/' target='_blank'>https://findmyfbid.com/</a>",
 	"enter_facebook_id" => "Bitte geben Sie Ihre Facebook-ID ein",
 	"show_title" => "Titel anzeigen",
 	"max_posts" => "Maximale Anzahl an Posts",
