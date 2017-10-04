@@ -48,6 +48,7 @@ return array(
     'Gajus\\Dindent\\' => array($vendorDir . '/gajus/dindent/src'),
     'Former\\' => array($vendorDir . '/anahkiasen/former/src/Former', $vendorDir . '/anahkiasen/former/tests'),
     'Embed\\' => array($vendorDir . '/embed/embed/src'),
+    'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Common/Inflector'),
     'DeviceDetector\\' => array($vendorDir . '/piwik/device-detector'),
     'Codesleeve\\Stapler\\' => array($vendorDir . '/codesleeve/stapler/src'),
     'Codesleeve\\LaravelStapler\\' => array($vendorDir . '/codesleeve/laravel-stapler/src'),

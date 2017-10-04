@@ -16,8 +16,8 @@ class ComposerStaticInit26cd48079ac5d05d6b6a0c249f1c91a8
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
         '04c6c5c2f7095ccf6c481d3e53e1776f' => __DIR__ . '/..' . '/mustangostang/spyc/Spyc.php',
+        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -104,6 +104,7 @@ class ComposerStaticInit26cd48079ac5d05d6b6a0c249f1c91a8
         ),
         'D' => 
         array (
+            'Doctrine\\Common\\Inflector\\' => 26,
             'DeviceDetector\\' => 15,
         ),
         'C' => 
@@ -292,6 +293,10 @@ class ComposerStaticInit26cd48079ac5d05d6b6a0c249f1c91a8
         array (
             0 => __DIR__ . '/..' . '/embed/embed/src',
         ),
+        'Doctrine\\Common\\Inflector\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Common/Inflector',
+        ),
         'DeviceDetector\\' => 
         array (
             0 => __DIR__ . '/..' . '/piwik/device-detector',
@@ -464,13 +469,6 @@ class ComposerStaticInit26cd48079ac5d05d6b6a0c249f1c91a8
                 0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
             ),
         ),
-        'D' => 
-        array (
-            'Doctrine\\Common\\Inflector\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/inflector/lib',
-            ),
-        ),
         'C' => 
         array (
             'Crypt' => 
@@ -614,6 +612,7 @@ class ComposerStaticInit26cd48079ac5d05d6b6a0c249f1c91a8
         'elFinderVolumeMySQL' => __DIR__ . '/..' . '/studio-42/elfinder/php/elFinderVolumeMySQL.class.php',
         'elFinderVolumeOneDrive' => __DIR__ . '/..' . '/studio-42/elfinder/php/elFinderVolumeOneDrive.class.php',
         'elFinderVolumeS3' => __DIR__ . '/..' . '/barryvdh/elfinder-builds/php/elFinderVolumeS3.class.php',
+        'elFinderVolumeTrash' => __DIR__ . '/..' . '/studio-42/elfinder/php/elFinderVolumeTrash.class.php',
         'scss_formatter' => __DIR__ . '/..' . '/leafo/scssphp/classmap.php',
         'scss_formatter_compressed' => __DIR__ . '/..' . '/leafo/scssphp/classmap.php',
         'scss_formatter_crunched' => __DIR__ . '/..' . '/leafo/scssphp/classmap.php',

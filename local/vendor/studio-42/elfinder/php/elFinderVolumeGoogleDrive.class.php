@@ -110,6 +110,7 @@ class elFinderVolumeGoogleDrive extends elFinderVolumeDriver
             'gdAlias' => '%s@GDrive',
             'googleApiClient' => '',
             'path' => '/',
+            'tmbPath' => '',
             'separator' => '/',
             'useGoogleTmb' => true,
             'acceptedName' => '#^[^/\\?*:|"<>]*[^./\\?*:|"<>]$#',
@@ -976,9 +977,6 @@ class elFinderVolumeGoogleDrive extends elFinderVolumeDriver
             }
         }
 
-        if (!$this->tmp && is_writable($this->options['tmbPath'])) {
-            $this->tmp = $this->options['tmbPath'];
-        }
         if (!$this->tmp && ($tmp = elFinder::getStaticVar('commonTempPath'))) {
             $this->tmp = $tmp;
         }
@@ -1004,6 +1002,11 @@ class elFinderVolumeGoogleDrive extends elFinderVolumeDriver
     protected function configure()
     {
         parent::configure();
+
+        // fallback of $this->tmp
+        if (!$this->tmp && $this->tmbPathWritable) {
+            $this->tmp = $this->tmbPath;
+        }
 
         $this->disabled[] = 'archive';
         $this->disabled[] = 'extract';
@@ -1324,6 +1327,13 @@ class elFinderVolumeGoogleDrive extends elFinderVolumeDriver
      */
     public function getContentUrl($hash, $options = [])
     {
+        if (!empty($options['temporary'])) {
+            // try make temporary file
+            $url = parent::getContentUrl($hash, $options);
+            if ($url) {
+                return $url;
+            }
+        }
         if (($file = $this->file($hash)) == false || !$file['url'] || $file['url'] == 1) {
             $path = $this->decode($hash);
 
@@ -1726,7 +1736,8 @@ class elFinderVolumeGoogleDrive extends elFinderVolumeDriver
      **/
     protected function _copy($source, $targetDir, $name)
     {
-        $path = $this->_normpath($targetDir.'/'.$name);
+        $source = $this->_normpath($source);
+        $targetDir = $this->_normpath($targetDir);
 
         try {
             $file = new \Google_Service_Drive_DriveFile();
@@ -1898,8 +1909,8 @@ class elFinderVolumeGoogleDrive extends elFinderVolumeDriver
             $chunkSizeBytes = 100 * 1024 * 1024;
             if ($size > 0) {
                 $memory = elFinder::getIniBytes('memory_limit');
-                if ($memory) {
-                    $chunkSizeBytes = min([$chunkSizeBytes, (intval($memory / 4 / 256) * 256)]);
+                if ($memory > 0) {
+                    $chunkSizeBytes = max(262144, min([$chunkSizeBytes, (intval($memory / 4 / 256) * 256)]));
                 }
             }
 

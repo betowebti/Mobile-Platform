@@ -59,9 +59,26 @@ class DebugClassLoaderTest extends TestCase
         $this->fail('DebugClassLoader did not register');
     }
 
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage boo
+     */
+    public function testThrowingClass()
+    {
+        try {
+            class_exists(__NAMESPACE__.'\Fixtures\Throwing');
+            $this->fail('Exception expected');
+        } catch (\Exception $e) {
+            $this->assertSame('boo', $e->getMessage());
+        }
+
+        // the second call also should throw
+        class_exists(__NAMESPACE__.'\Fixtures\Throwing');
+    }
+
     public function testUnsilencing()
     {
-        if (PHP_VERSION_ID >= 70000) {
+        if (\PHP_VERSION_ID >= 70000) {
             $this->markTestSkipped('PHP7 throws exceptions, unsilencing is not required anymore.');
         }
         if (defined('HHVM_VERSION')) {
@@ -111,7 +128,7 @@ class DebugClassLoaderTest extends TestCase
             restore_error_handler();
             restore_exception_handler();
             $this->assertStringStartsWith(__FILE__, $exception->getFile());
-            if (PHP_VERSION_ID < 70000) {
+            if (\PHP_VERSION_ID < 70000) {
                 $this->assertRegExp('/^Runtime Notice: Declaration/', $exception->getMessage());
                 $this->assertEquals(E_STRICT, $exception->getSeverity());
             } else {
@@ -128,6 +145,7 @@ class DebugClassLoaderTest extends TestCase
 
     /**
      * @expectedException \RuntimeException
+     * @expectedExceptionMessage Case mismatch between loaded and declared class names
      */
     public function testNameCaseMismatch()
     {
@@ -149,6 +167,7 @@ class DebugClassLoaderTest extends TestCase
 
     /**
      * @expectedException \RuntimeException
+     * @expectedExceptionMessage Case mismatch between loaded and declared class names
      */
     public function testPsr4CaseMismatch()
     {
@@ -227,7 +246,7 @@ class DebugClassLoaderTest extends TestCase
 
     public function testReservedForPhp7()
     {
-        if (PHP_VERSION_ID >= 70000) {
+        if (\PHP_VERSION_ID >= 70000) {
             $this->markTestSkipped('PHP7 already prevents using reserved names.');
         }
 

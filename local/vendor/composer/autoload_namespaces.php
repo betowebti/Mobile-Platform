@@ -32,7 +32,6 @@ return array(
     'Geocoder' => array($vendorDir . '/willdurand/geocoder/src'),
     'Fitztrev\\LaravelHtmlMinify' => array($vendorDir . '/fitztrev/laravel-html-minify/src'),
     'File' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
-    'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib'),
     'Crypt' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'ClassPreloader' => array($vendorDir . '/classpreloader/classpreloader/src'),
     'Campaign' => array($baseDir . '/app/src'),

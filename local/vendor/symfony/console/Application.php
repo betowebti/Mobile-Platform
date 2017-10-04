@@ -15,6 +15,7 @@ use Symfony\Component\Console\Descriptor\TextDescriptor;
 use Symfony\Component\Console\Descriptor\XmlDescriptor;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
+use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -71,6 +72,7 @@ class Application
     private $dispatcher;
     private $terminalDimensions;
     private $defaultCommand;
+    private $initialized;
 
     /**
      * Constructor.
@@ -83,12 +85,6 @@ class Application
         $this->name = $name;
         $this->version = $version;
         $this->defaultCommand = 'list';
-        $this->helperSet = $this->getDefaultHelperSet();
-        $this->definition = $this->getDefaultInputDefinition();
-
-        foreach ($this->getDefaultCommands() as $command) {
-            $this->add($command);
-        }
     }
 
     public function setDispatcher(EventDispatcherInterface $dispatcher)
@@ -103,6 +99,8 @@ class Application
      * @param OutputInterface $output An Output instance
      *
      * @return int 0 if everything went fine, or an error code
+     *
+     * @throws \Exception When running fails. Bypass this when {@link setCatchExceptions()}.
      */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
@@ -117,10 +115,17 @@ class Application
         $this->configureIO($input, $output);
 
         try {
+            $e = null;
             $exitCode = $this->doRun($input, $output);
-        } catch (\Exception $e) {
-            if (!$this->catchExceptions) {
-                throw $e;
+        } catch (\Exception $x) {
+            $e = $x;
+        } catch (\Throwable $x) {
+            $e = new FatalThrowableError($x);
+        }
+
+        if (null !== $e) {
+            if (!$this->catchExceptions || !$x instanceof \Exception) {
+                throw $x;
             }
 
             if ($output instanceof ConsoleOutputInterface) {
@@ -179,9 +184,16 @@ class Application
 
         if (!$name) {
             $name = $this->defaultCommand;
-            $input = new ArrayInput(array('command' => $this->defaultCommand));
+            $definition = $this->getDefinition();
+            $definition->setArguments(array_merge(
+                $definition->getArguments(),
+                array(
+                    'command' => new InputArgument('command', InputArgument::OPTIONAL, $definition->getArgument('command')->getDescription(), $name),
+                )
+            ));
         }
 
+        $this->runningCommand = null;
         // the command name MUST be the first element of the input
         $command = $this->find($name);
 
@@ -209,6 +221,10 @@ class Application
      */
     public function getHelperSet()
     {
+        if (!$this->helperSet) {
+            $this->helperSet = $this->getDefaultHelperSet();
+        }
+
         return $this->helperSet;
     }
 
@@ -229,6 +245,10 @@ class Application
      */
     public function getDefinition()
     {
+        if (!$this->definition) {
+            $this->definition = $this->getDefaultInputDefinition();
+        }
+
         return $this->definition;
     }
 
@@ -358,6 +378,8 @@ class Application
      */
     public function add(Command $command)
     {
+        $this->init();
+
         $command->setApplication($this);
 
         if (!$command->isEnabled()) {
@@ -390,6 +412,8 @@ class Application
      */
     public function get($name)
     {
+        $this->init();
+
         if (!isset($this->commands[$name])) {
             throw new \InvalidArgumentException(sprintf('The command "%s" does not exist.', $name));
         }
@@ -417,6 +441,8 @@ class Application
      */
     public function has($name)
     {
+        $this->init();
+
         return isset($this->commands[$name]);
     }
 
@@ -494,6 +520,8 @@ class Application
      */
     public function find($name)
     {
+        $this->init();
+
         $allCommands = array_keys($this->commands);
         $expr = preg_replace_callback('{([^:]+|)}', function ($matches) { return preg_quote($matches[1]).'[^:]*'; }, $name);
         $commands = preg_grep('{^'.$expr.'}', $allCommands);
@@ -549,6 +577,8 @@ class Application
      */
     public function all($namespace = null)
     {
+        $this->init();
+
         if (null === $namespace) {
             return $this->commands;
         }
@@ -643,7 +673,7 @@ class Application
         do {
             $title = sprintf('  [%s]  ', get_class($e));
 
-            $len = $this->stringWidth($title);
+            $len = Helper::strlen($title);
 
             $width = $this->getTerminalWidth() ? $this->getTerminalWidth() - 1 : PHP_INT_MAX;
             // HHVM only accepts 32 bits integer in str_split, even when PHP_INT_MAX is a 64 bit integer: https://github.com/facebook/hhvm/issues/1327
@@ -654,7 +684,7 @@ class Application
             foreach (preg_split('/\r?\n/', $e->getMessage()) as $line) {
                 foreach ($this->splitStringByWidth($line, $width - 4) as $line) {
                     // pre-format lines to get the right string length
-                    $lineLength = $this->stringWidth($line) + 4;
+                    $lineLength = Helper::strlen($line) + 4;
                     $lines[] = array($line, $lineLength);
 
                     $len = max($lineLength, $len);
@@ -663,7 +693,7 @@ class Application
 
             $messages = array();
             $messages[] = $emptyLine = sprintf('<error>%s</error>', str_repeat(' ', $len));
-            $messages[] = sprintf('<error>%s%s</error>', $title, str_repeat(' ', max(0, $len - $this->stringWidth($title))));
+            $messages[] = sprintf('<error>%s%s</error>', $title, str_repeat(' ', max(0, $len - Helper::strlen($title))));
             foreach ($lines as $line) {
                 $messages[] = sprintf('<error>  %s  %s</error>', OutputFormatter::escape($line[0]), str_repeat(' ', $len - $line[1]));
             }
@@ -839,46 +869,40 @@ class Application
         }
 
         if (null === $this->dispatcher) {
-            try {
-                return $command->run($input, $output);
-            } catch (\Exception $e) {
-                throw $e;
-            } catch (\Throwable $e) {
-                throw new FatalThrowableError($e);
-            }
+            return $command->run($input, $output);
         }
 
         $event = new ConsoleCommandEvent($command, $input, $output);
-        $this->dispatcher->dispatch(ConsoleEvents::COMMAND, $event);
+        $e = null;
 
-        if ($event->commandShouldRun()) {
-            try {
-                $e = null;
+        try {
+            $this->dispatcher->dispatch(ConsoleEvents::COMMAND, $event);
+
+            if ($event->commandShouldRun()) {
                 $exitCode = $command->run($input, $output);
-            } catch (\Exception $x) {
-                $e = $x;
-            } catch (\Throwable $x) {
-                $e = new FatalThrowableError($x);
+            } else {
+                $exitCode = ConsoleCommandEvent::RETURN_CODE_DISABLED;
             }
-            if (null !== $e) {
-                $event = new ConsoleExceptionEvent($command, $input, $output, $e, $e->getCode());
-                $this->dispatcher->dispatch(ConsoleEvents::EXCEPTION, $event);
+        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+        }
+        if (null !== $e) {
+            $x = $e instanceof \Exception ? $e : new FatalThrowableError($e);
+            $event = new ConsoleExceptionEvent($command, $input, $output, $x, $x->getCode());
+            $this->dispatcher->dispatch(ConsoleEvents::EXCEPTION, $event);
 
-                if ($e !== $event->getException()) {
-                    $x = $e = $event->getException();
-                }
-
-                $event = new ConsoleTerminateEvent($command, $input, $output, $e->getCode());
-                $this->dispatcher->dispatch(ConsoleEvents::TERMINATE, $event);
-
-                throw $x;
+            if ($x !== $event->getException()) {
+                $e = $event->getException();
             }
-        } else {
-            $exitCode = ConsoleCommandEvent::RETURN_CODE_DISABLED;
+            $exitCode = $e->getCode();
         }
 
         $event = new ConsoleTerminateEvent($command, $input, $output, $exitCode);
         $this->dispatcher->dispatch(ConsoleEvents::TERMINATE, $event);
+
+        if (null !== $e) {
+            throw $e;
+        }
 
         return $event->getExitCode();
     }
@@ -1082,19 +1106,6 @@ class Application
         $this->defaultCommand = $commandName;
     }
 
-    private function stringWidth($string)
-    {
-        if (!function_exists('mb_strwidth')) {
-            return strlen($string);
-        }
-
-        if (false === $encoding = mb_detect_encoding($string, null, true)) {
-            return strlen($string);
-        }
-
-        return mb_strwidth($string, $encoding);
-    }
-
     private function splitStringByWidth($string, $width)
     {
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
@@ -1153,5 +1164,17 @@ class Application
         }
 
         return $namespaces;
+    }
+
+    private function init()
+    {
+        if ($this->initialized) {
+            return;
+        }
+        $this->initialized = true;
+
+        foreach ($this->getDefaultCommands() as $command) {
+            $this->add($command);
+        }
     }
 }

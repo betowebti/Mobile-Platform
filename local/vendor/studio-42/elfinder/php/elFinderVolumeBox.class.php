@@ -501,7 +501,7 @@ class elFinderVolumeBox extends elFinderVolumeDriver
         list(, $itemId) = $this->_bd_splitPath($path);
 
         try {
-            $url = self::API_URL.'/files/'.$itemId.'/content';
+            $url = self::API_URL.'/files/'.$itemId.'/thumbnail.png?min_height=' . $this->tmbSize . '&min_width=' . $this->tmbSize;
 
             $contents = $this->_bd_fetch($url, true);
 
@@ -734,6 +734,21 @@ class elFinderVolumeBox extends elFinderVolumeDriver
         return true;
     }
 
+    /**
+     * Return debug info for client.
+     *
+     * @return array
+     **/
+    public function debug()
+    {
+        $res = parent::debug();
+        if (! empty($this->options['accessToken'])) {
+            $res['accessToken'] = $this->options['accessToken'];
+        }
+    
+        return $res;
+    }
+
     /*********************************************************************/
     /*                        INIT AND CONFIGURE                         */
     /*********************************************************************/
@@ -796,9 +811,6 @@ class elFinderVolumeBox extends elFinderVolumeDriver
             }
         }
 
-        if (!$this->tmp && is_writable($this->options['tmbPath'])) {
-            $this->tmp = $this->options['tmbPath'];
-        }
         if (!$this->tmp && ($tmp = elFinder::getStaticVar('commonTempPath'))) {
             $this->tmp = $tmp;
         }
@@ -820,6 +832,11 @@ class elFinderVolumeBox extends elFinderVolumeDriver
     protected function configure()
     {
         parent::configure();
+
+        // fallback of $this->tmp
+        if (!$this->tmp && $this->tmbPathWritable) {
+            $this->tmp = $this->tmbPath;
+        }
 
         $this->disabled[] = 'archive';
         $this->disabled[] = 'extract';
@@ -1082,7 +1099,7 @@ class elFinderVolumeBox extends elFinderVolumeDriver
     protected function getSharedWebContentLink($raw)
     {
         $fExtension = pathinfo($raw->name, PATHINFO_EXTENSION);
-        $fType = explode('/', self::mimetypeInternalDetect($raw->name))[0];
+        list($fType) = explode('/', self::mimetypeInternalDetect($raw->name));
 
         if ($raw->shared_link->url && ($fType == 'image' || $fType == 'video' || $fType == 'audio')) {
             if ($fExtension == 'jpg' && $fType == 'image') {
@@ -1121,6 +1138,13 @@ class elFinderVolumeBox extends elFinderVolumeDriver
      **/
     public function getContentUrl($hash, $options = array())
     {
+        if (!empty($options['temporary'])) {
+            // try make temporary file
+            $url = parent::getContentUrl($hash, $options);
+            if ($url) {
+                return $url;
+            }
+        }
         if (($file = $this->file($hash)) == false || !$file['url'] || $file['url'] == 1) {
             $path = $this->decode($hash);
 
